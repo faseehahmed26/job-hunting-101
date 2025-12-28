@@ -1,4 +1,3 @@
-```md
 # Tries
 
 ## Tries: An Overview
@@ -296,5 +295,5 @@ print(trie.search("cap"))     # False
 
 By mastering Tries, you will be well prepared to solve autocomplete, dictionary search, and prefix-matching problems efficiently.
 
-```
+
 ```
