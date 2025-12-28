@@ -1,4 +1,3 @@
-````md
 # Trees: An Overview
 
 A tree is a hierarchical data structure consisting of nodes connected by edges. It is widely used in computer science for representing hierarchical relationships such as file systems, organizational structures, and decision-making processes.
@@ -351,5 +350,5 @@ print("Post-order:", postorder_traversal_iterative(root))
 
 Mastering these concepts will prepare you to solve most tree-related coding problems effectively.
 
-```
+
 ```
