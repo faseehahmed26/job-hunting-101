@@ -1,4 +1,4 @@
-````md
+
 # Arrays and Hashing: An Overview
 
 Arrays and hashing are foundational concepts in computer science and programming. Arrays are simple data structures that store elements in contiguous memory locations, while hashing uses hash functions to map data to a hash table for efficient lookups and retrievals.
@@ -288,5 +288,3 @@ Example: Group Anagrams.
 
 By mastering arrays and hashing techniques, you will be well prepared to tackle a wide variety of coding challenges efficiently and effectively.
 
-```
-```
