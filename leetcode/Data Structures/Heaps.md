@@ -1,4 +1,3 @@
-```md
 # Heaps
 
 ## Heaps: An Overview
@@ -267,5 +266,4 @@ print(heapq.nsmallest(2, nums))  # [2, 5]
 
 By mastering heap concepts, you will be well prepared to solve priority queue problems, efficient sorting tasks, and dynamic ordering challenges in real-world applications.
 
-```
 ```
