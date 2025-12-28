@@ -1,4 +1,3 @@
-```md
 # Monotonic Stack: Complete Interview Guide
 
 A **monotonic stack** maintains elements in increasing or decreasing order, enabling `O(n)` solutions for problems that would otherwise require `O(n²)` time.
