@@ -1,4 +1,3 @@
-```md
 # Interview Complexity Cheatsheet
 
 This cheatsheet summarizes the time and space complexity of common Python data structures and core algorithms, with emphasis on patterns frequently tested in Meta interviews.
@@ -7,7 +6,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ## Python Built-in Data Structures
 
-## Lists (Dynamic Arrays)
+### Lists (Dynamic Arrays)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -26,7 +25,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ---
 
-## Dictionaries (Hash Tables)
+### Dictionaries (Hash Tables)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -43,7 +42,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ---
 
-## Sets (Hash Tables)
+### Sets (Hash Tables)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -58,7 +57,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ---
 
-## Deque (`collections.deque`)
+### Deque (`collections.deque`)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -70,7 +69,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ---
 
-## Heapq (Binary Min-Heap)
+### Heapq (Binary Min-Heap)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -82,7 +81,7 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 
 ---
 
-## Strings (Immutable Sequences)
+### Strings (Immutable Sequences)
 
 | Operation | Average Case | Worst Case | Space | Notes |
 |---------|--------------|------------|-------|------|
@@ -190,4 +189,3 @@ This cheatsheet summarizes the time and space complexity of common Python data s
 ---
 
 This cheatsheet covers the most important data structures and algorithms for Meta technical interviews, with emphasis on patterns and complexities most frequently tested.
-```
