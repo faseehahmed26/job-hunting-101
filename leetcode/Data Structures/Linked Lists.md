@@ -1,4 +1,3 @@
-````md
 # Linked Lists: An Overview
 
 A linked list is a linear data structure where elements, called nodes, are connected using pointers. Each node consists of:
@@ -276,4 +275,4 @@ Example: Finding a sublist that satisfies certain conditions
 By mastering these concepts and techniques, you can confidently solve a wide range of linked list problems.
 
 ```
-```
+
