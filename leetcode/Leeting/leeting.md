@@ -1,4 +1,3 @@
-````md
 # Interview Algorithm Templates (Python)
 
 This document is a **clean, interview-ready template collection** for common algorithmic patterns. Use these as starting points during live coding.
