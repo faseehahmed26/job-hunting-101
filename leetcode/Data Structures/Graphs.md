@@ -21,6 +21,9 @@ Adjacency List Representation:
 }
 
 ````
+![Graph Structure Example](../Pictures/bfs.png)
+![Graph Structure Example](../Pictures/dfs.png)
+
 
 ### Core Concepts
 - **V:** Vertices  
