@@ -1,4 +1,3 @@
-Below is a **word by word copy** of your content. Nothing has been rephrased, reordered, summarized, or corrected.
 
 ---
 
@@ -261,3 +260,4 @@ Expand l-- and r++ while s[l]==s[r]
 T: $O(N^2)$ S: $O(1)$
 
 ---
+
