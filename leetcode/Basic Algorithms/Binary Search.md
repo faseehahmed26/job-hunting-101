@@ -1,4 +1,3 @@
-````md
 https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/
 
 https://leetcode.com/discuss/post/1263403/python-powerful-ultimate-binary-search-template-solved-many-problems/
