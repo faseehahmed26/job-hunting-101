@@ -1,38 +1,39 @@
-https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/
+# Binary Search Notes (Interview Quick Guide)
 
-https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/
-# Binary Search: Complete Interview Guide
+Binary search reduces search from **O(n)** to **O(log n)** by repeatedly halving a **search space**. The key requirement is **monotonicity**: once a condition becomes true (or false), it stays that way on one side.
 
-Binary search is a powerful technique that reduces search time from O(n) to O(log n).  
-The core insight is **monotonicity**: if a condition is true at some point, it stays true (or false) beyond that point.
+## When to use
+- **First or last occurrence**, **lower bound**, **upper bound**
+- **Minimum** or **maximum** value that satisfies a constraint
+- **Kth** smallest or largest using a counting or feasibility check
+- “Optimize under constraints” (capacity, time, speed, distance)
 
----
+## Two main templates
 
-## Core Concepts
+### 1) Exact search in sorted array (find target)
+Use when you want the index of a value (or return -1 if missing).
+```python
+l, r = 0, len(nums) - 1
+while l <= r:
+    mid = l + (r - l) // 2
+    if nums[mid] == target:
+        return mid
+    if nums[mid] < target:
+        l = mid + 1
+    else:
+        r = mid - 1
+return -1
+````
 
-### What is Binary Search?
-- Repeatedly divide the search space in half
-- Keep the half that can still contain the answer
-- Discard the half that cannot
-- Works on any **monotonic condition**, not only sorted arrays
+### 2) Boundary search (first True, lower bound)
 
-### When to Use Binary Search?
-- You can define a condition `condition(x)` that is monotonic
-- You want to **minimize x** such that `condition(x)` is true
-- You want to **maximize x** such that `condition(x)` is true
-- Direct brute force is too slow
-
----
-
-## Universal Binary Search Template
+Use when you can write a monotonic `condition(x)`.
 
 ```python
-def binary_search(search_space):
-    def condition(value) -> bool:
-        # return True if value is acceptable
+def binary_search(left, right):
+    def condition(x) -> bool:
         pass
 
-    left, right = min(search_space), max(search_space)
     while left < right:
         mid = left + (right - left) // 2
         if condition(mid):
@@ -40,229 +41,41 @@ def binary_search(search_space):
         else:
             left = mid + 1
     return left
-````
-
-### Template Rules
-
-* Boundaries must include all possible answers
-* `condition(mid) == True` means search left
-* Loop invariant: `left < right`
-* Returned value is the **minimum valid answer**
-
----
-
-## Problem Categories and Patterns
-
-## 1. Classic Array Search Problems
-
-### Find Target in Sorted Array
-
-```python
-def search_target(nums, target):
-    left, right = 0, len(nums)
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] >= target:
-            right = mid
-        else:
-            left = mid + 1
-    return left if left < len(nums) and nums[left] == target else -1
 ```
 
-### Find Insert Position
+**Rules to remember**
 
-```python
-def search_insert(nums, target):
-    left, right = 0, len(nums)
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] >= target:
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
+* Choose `[left, right]` (or `[left, right)`) so it includes all possible answers.
+* If `condition(mid)` is True and you want the first True, move `right = mid`.
+* Return value is typically the **smallest valid** answer (lower bound).
 
-### First and Last Occurrence
+## Common patterns
 
-```python
-def find_first(nums, target):
-    left, right = 0, len(nums)
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] >= target:
-            right = mid
-        else:
-            left = mid + 1
-    return left if left < len(nums) and nums[left] == target else -1
+### Lower bound and upper bound
 
-def find_last(nums, target):
-    left, right = 0, len(nums)
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] > target:
-            right = mid
-        else:
-            left = mid + 1
-    return left - 1 if left > 0 and nums[left - 1] == target else -1
-```
+* **First index with `nums[i] >= target`**: lower bound
+* **First index with `nums[i] > target`**: upper bound
 
----
+### Peak finding
 
-## 2. Peak Finding Problems
+Compare neighbors and move toward the side that must contain a peak.
 
-### Find Peak Element
+### Rotated array
 
-```python
-def find_peak(nums):
-    left, right = 0, len(nums) - 1
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] > nums[mid + 1]:
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
+Identify which half is sorted, then decide which half can contain the target.
 
----
+### Binary search on answer (feasibility)
 
-## 3. Rotated Sorted Array
+Search an integer answer range; each mid is checked by a `can(mid)` function.
+Examples: Koko eating bananas, ship packages within D days, split array largest sum.
 
-### Search in Rotated Sorted Array
+### Kth element via counting
 
-```python
-def search_rotated(nums, target):
-    left, right = 0, len(nums) - 1
-    while left <= right:
-        mid = left + (right - left) // 2
-        if nums[mid] == target:
-            return mid
-        if nums[left] <= nums[mid]:
-            if nums[left] <= target < nums[mid]:
-                right = mid - 1
-            else:
-                left = mid + 1
-        else:
-            if nums[mid] < target <= nums[right]:
-                left = mid + 1
-            else:
-                right = mid - 1
-    return -1
-```
+Search a value `x` and count how many elements are `<= x`. Use monotonic count.
 
-### Find Minimum in Rotated Array
+## Variations
 
-```python
-def find_min(nums):
-    left, right = 0, len(nums) - 1
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] > nums[right]:
-            left = mid + 1
-        else:
-            right = mid
-    return nums[left]
-```
-
----
-
-## 4. Mathematical Binary Search
-
-### Integer Square Root
-
-```python
-def my_sqrt(x):
-    left, right = 0, x + 1
-    while left < right:
-        mid = left + (right - left) // 2
-        if mid * mid > x:
-            right = mid
-        else:
-            left = mid + 1
-    return left - 1
-```
-
----
-
-## 5. Binary Search on Answer (Optimization)
-
-### Ship Packages Within D Days
-
-```python
-def ship_within_days(weights, days):
-    def can_ship(capacity):
-        curr, d = 0, 1
-        for w in weights:
-            if curr + w > capacity:
-:
-                d += 1
-                curr = w
-                if d > days:
-                    return False
-            else:
-                curr += w
-        return True
-
-    left, right = max(weights), sum(weights)
-    while left < right:
-        mid = left + (right - left) // 2
-        if can_ship(mid):
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
-
-### Koko Eating Bananas
-
-```python
-def min_eating_speed(piles, h):
-    def can_finish(speed):
-        hours = 0
-        for p in piles:
-            hours += (p + speed - 1) // speed
-        return hours <= h
-
-    left, right = 1, max(piles)
-    while left < right:
-        mid = left + (right - left) // 2
-        if can_finish(mid):
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
-
----
-
-## 6. Kth Element Problems
-
-### Kth Smallest Number in Multiplication Table
-
-```python
-def find_kth(m, n, k):
-    def enough(x):
-        count = 0
-        for i in range(1, m + 1):
-            count += min(x // i, n)
-        return count >= k
-
-    left, right = 1, m * n
-    while left < right:
-        mid = left + (right - left) // 2
-        if enough(mid):
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
-
----
-
-## Binary Search Variations
-
-### Find Maximum Valid Value
+### Find maximum valid (last True)
 
 ```python
 def binary_search_max(left, right):
@@ -278,83 +91,35 @@ def binary_search_max(left, right):
     return left
 ```
 
-### Floating Point Binary Search
+### Floating point binary search
 
-```python
-def binary_search_float(left, right, eps=1e-6):
-    def condition(x):
-        pass
+Stop when interval is smaller than `eps`.
 
-    while right - left > eps:
-        mid = (left + right) / 2
-        if condition(mid):
-            right = mid
-        else:
-            left = mid
-    return left
-```
+## Complexity
 
----
+* **Time:** `O(log N)` iterations
+* If each check costs `O(C)`, total is `O(C log N)`
+* **Space:** `O(1)` for iterative binary search
 
-## Interview Recognition Signals
+## Common mistakes
 
-### Keywords
+* Off-by-one in boundaries (`right = len(nums)` vs `len(nums)-1`)
+* Wrong loop condition (`l < r` vs `l <= r`)
+* Wrong mid for “last true” (need upper mid)
+* Condition is not monotonic
 
-* Minimum or maximum value
-* Kth smallest or largest
-* First or last occurrence
-* Capacity, speed, time, distance
-* Optimize under constraints
+## Practice set
 
-### Characteristics
+* 704, 35, 69
+* 162, 33, 875
+* 410, 668, 4
 
-* Search space can be defined
-* Monotonic property exists
-* Checking feasibility is easier than finding answer
+## References
 
----
-
-## Common Mistakes
-
-* Using `left <= right` when template needs `left < right`
-* Incorrect mid calculation
-* Off by one boundaries
-* Forgetting to include all valid answers
-
----
-
-## Time and Space Complexity
-
-* Time: O(log n)
-* Total time: O(log n × check)
-* Space: O(1) iterative
-
----
-
-## Practice Problems
-
-### Easy
-
-* Binary Search (704)
-* Search Insert Position (35)
-* Sqrt(x) (69)
-
-### Medium
-
-* Find Peak Element (162)
-* Search in Rotated Sorted Array (33)
-* Koko Eating Bananas (875)
-
-### Hard
-
-* Split Array Largest Sum (410)
-* Kth Smallest Number in Multiplication Table (668)
-* Median of Two Sorted Arrays (4)
-
----
-
-**Key Takeaway**
-Binary search is about finding boundaries in a monotonic space, not just searching sorted arrays.
+* LeetCode Discuss: Binary Search Comprehensive Guide
+  [https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/](https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/)
+* LeetCode Discuss: Python Ultimate Binary Search Template
+  [https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/](https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/)
 
 ```
 ```
