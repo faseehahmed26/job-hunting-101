@@ -1,7 +1,6 @@
 https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/
 
-https://leetcode.com/discuss/post/1263403/python-powerful-ultimate-binary-search-template-solved-many-problems/
-
+https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/
 # Binary Search: Complete Interview Guide
 
 Binary search is a powerful technique that reduces search time from O(n) to O(log n).  
