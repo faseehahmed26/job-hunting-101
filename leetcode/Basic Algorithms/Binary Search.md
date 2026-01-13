@@ -120,6 +120,7 @@ Stop when interval is smaller than `eps`.
   [https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/](https://leetcode.com/discuss/post/3726061/binary-search-a-comprehensive-guide-by-i-3nxx/)
 * LeetCode Discuss: Python Ultimate Binary Search Template
   [https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/](https://leetcode.com/discuss/post/786126/python-powerful-ultimate-binary-search-t-rwv8/)
+* https://leetcode.com/discuss/post/2371234/an-opinionated-guide-to-binary-search-co-1yfw/
 
 ```
 ```
