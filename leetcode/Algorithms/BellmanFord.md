@@ -1,6 +1,6 @@
-# Kahn's Algorithm (BFS): An Overview
+# Bellman-Ford Algorithm: An Overview
 
-Kahn's algorithm is a BFS-based approach for topological sorting of a Directed Acyclic Graph (DAG). It processes nodes in order of their dependencies by tracking in-degrees (number of incoming edges) and removing nodes with no dependencies first.
+Bellman-Ford is a shortest path algorithm that can handle graphs with **negative edge weights**. Unlike Dijkstra's, it can detect negative cycles and works on graphs where edge weights can be negative.
 
 ---
 
@@ -8,356 +8,360 @@ Kahn's algorithm is a BFS-based approach for topological sorting of a Directed A
 
 ### Core Idea
 
-- **In-degree**: Number of incoming edges to a node (prerequisites/dependencies)
-- Process nodes with in-degree 0 first (no dependencies)
-- After processing a node, reduce in-degree of its neighbors
-- Continue until all nodes processed or cycle detected
+- Relax all edges repeatedly (V-1) times
+- **Relaxation**: Update distance if a shorter path is found
+- After V-1 iterations, shortest paths are found (if no negative cycle)
+- One more iteration detects negative cycles
 
-### Algorithm Steps
+### Why V-1 Iterations?
 
-1. Calculate in-degree for all nodes
-2. Add all nodes with in-degree 0 to queue
-3. While queue not empty:
-   - Dequeue a node and add to result
-   - For each neighbor, decrease in-degree by 1
-   - If neighbor's in-degree becomes 0, add to queue
-4. If result contains all nodes → valid topological order
-   If not → cycle exists
+- Shortest path between any two vertices has at most V-1 edges
+- Each iteration finds paths that are one edge longer
+- After V-1 iterations, all shortest paths are discovered
 
 ### Time & Space Complexity
 
-- **Time**: O(V + E) - visit each vertex and edge once
-- **Space**: O(V) - for queue and in-degree array
+- **Time**: O(V × E) - relax all edges V-1 times
+- **Space**: O(V) - distance array
 
 ---
 
 ## Basic Implementation
 
 ```python
-from collections import deque, defaultdict
-
-def kahns_algorithm(n, edges):
-    # Build adjacency list and calculate in-degrees
-    graph = defaultdict(list)
-    in_degree = [0] * n
+def bellman_ford(n, edges, source):
+    # Initialize distances
+    distance = [float('inf')] * n
+    distance[source] = 0
     
-    for u, v in edges:  # Edge from u to v
-        graph[u].append(v)
-        in_degree[v] += 1
+    # Relax all edges V-1 times
+    for _ in range(n - 1):
+        for u, v, weight in edges:
+            if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+                distance[v] = distance[u] + weight
     
-    # Initialize queue with nodes having no dependencies
-    queue = deque([i for i in range(n) if in_degree[i] == 0])
-    result = []
+    # Check for negative cycles
+    for u, v, weight in edges:
+        if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+            return None  # Negative cycle detected
     
-    while queue:
-        node = queue.popleft()
-        result.append(node)
-        
-        # Process neighbors
-        for neighbor in graph[node]:
-            in_degree[neighbor] -= 1
-            
-            # If all dependencies satisfied, add to queue
-            if in_degree[neighbor] == 0:
-                queue.append(neighbor)
-    
-    # Check if topological sort is possible (no cycle)
-    if len(result) == n:
-        return result
-    else:
-        return []  # Cycle detected
+    return distance
 ```
 
 ---
 
-## When to Use Kahn's Algorithm
+## When to Use Bellman-Ford
 
-Use Kahn's BFS when you need to:
-- Find topological ordering of tasks/courses
-- Detect cycles in directed graphs
-- Process items level by level (track stages/rounds)
-- Find minimum number of steps/rounds needed
+Use Bellman-Ford when you need to:
+- Handle graphs with negative edge weights
+- Detect negative cycles
+- Find shortest paths from single source
+- Work with edge list representation
 
 **Key indicators**:
-- "Prerequisites" or "dependencies"
-- "Valid order/sequence"
-- "Minimum semesters/rounds"
-- "Detect circular dependencies"
+- "Negative weights allowed"
+- "Detect negative cycles"
+- "Arbitrage opportunities" (currency exchange)
+- "Shortest path with constraints"
+
+**Use Dijkstra instead if**:
+- All edge weights are non-negative
+- Need faster performance
 
 ---
 
 ## Common Problem Patterns
 
-## 1. Course Schedule (Cycle Detection)
+## 1. Network Delay Time (Basic Shortest Path)
 
-Determine if all courses can be finished.
+Find time for signal to reach all nodes.
 
 ```python
-def can_finish(num_courses, prerequisites):
-    graph = defaultdict(list)
-    in_degree = [0] * num_courses
+def network_delay_time(times, n, k):
+    distance = [float('inf')] * (n + 1)
+    distance[k] = 0
     
-    for course, prereq in prerequisites:
-        graph[prereq].append(course)
-        in_degree[course] += 1
+    # Relax edges n-1 times
+    for _ in range(n - 1):
+        for u, v, w in times:
+            if distance[u] != float('inf'):
+                distance[v] = min(distance[v], distance[u] + w)
     
-    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])
-    completed = 0
-    
-    while queue:
-        course = queue.popleft()
-        completed += 1
-        
-        for next_course in graph[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append(next_course)
-    
-    return completed == num_courses  # True if no cycle
+    max_dist = max(distance[1:])
+    return max_dist if max_dist != float('inf') else -1
 ```
 
 ---
 
-## 2. Course Schedule II (Return Order)
+## 2. Cheapest Flights Within K Stops
 
-Return valid course order or empty if impossible.
+Find cheapest path with at most K stops.
 
 ```python
-def find_order(num_courses, prerequisites):
-    graph = defaultdict(list)
-    in_degree = [0] * num_courses
+def find_cheapest_price(n, flights, src, dst, k):
+    # Use Bellman-Ford with limited iterations (k+1)
+    distance = [float('inf')] * n
+    distance[src] = 0
     
-    for course, prereq in prerequisites:
-        graph[prereq].append(course)
-        in_degree[course] += 1
-    
-    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])
-    order = []
-    
-    while queue:
-        course = queue.popleft()
-        order.append(course)
+    # Run k+1 iterations (k stops means k+1 edges)
+    for _ in range(k + 1):
+        temp = distance.copy()  # Prevent same iteration updates
         
-        for next_course in graph[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append(next_course)
+        for u, v, price in flights:
+            if distance[u] != float('inf'):
+                temp[v] = min(temp[v], distance[u] + price)
+        
+        distance = temp
     
-    return order if len(order) == num_courses else []
+    return distance[dst] if distance[dst] != float('inf') else -1
 ```
 
 ---
 
-## 3. Minimum Semesters/Rounds
+## 3. Detect Negative Cycle
 
-Find minimum number of rounds to complete all tasks.
+Check if graph contains a negative weight cycle.
 
 ```python
-def minimum_semesters(n, relations):
-    graph = defaultdict(list)
-    in_degree = [0] * (n + 1)
+def has_negative_cycle(n, edges):
+    distance = [0] * n  # Start with 0 to detect any cycle
     
-    for prev, next in relations:
-        graph[prev].append(next)
-        in_degree[next] += 1
+    # Relax edges n-1 times
+    for _ in range(n - 1):
+        for u, v, weight in edges:
+            if distance[u] + weight < distance[v]:
+                distance[v] = distance[u] + weight
     
-    # Queue stores (course, semester_number)
-    queue = deque([(i, 1) for i in range(1, n + 1) if in_degree[i] == 0])
-    completed = 0
-    max_semester = 0
+    # Check for negative cycle
+    for u, v, weight in edges:
+        if distance[u] + weight < distance[v]:
+            return True  # Negative cycle exists
     
-    while queue:
-        course, semester = queue.popleft()
-        completed += 1
-        max_semester = max(max_semester, semester)
-        
-        for next_course in graph[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append((next_course, semester + 1))
-    
-    return max_semester if completed == n else -1
+    return False
 ```
 
 ---
 
-## 4. All Ancestors in DAG
+## 4. Currency Arbitrage Detection
 
-Find all ancestors for each node.
+Find if arbitrage opportunity exists (profit from currency exchange).
 
 ```python
-def get_ancestors(n, edges):
-    graph = defaultdict(list)
-    in_degree = [0] * n
+import math
+
+def has_arbitrage(n, rates):
+    # Convert to edge list with negative log weights
+    # If product > 1, sum of logs > 0, negative sum < 0
+    edges = []
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                # Negative log to convert product to sum
+                edges.append((i, j, -math.log(rates[i][j])))
     
-    for u, v in edges:
-        graph[u].append(v)
-        in_degree[v] += 1
+    # Detect negative cycle (arbitrage opportunity)
+    distance = [0] * n
     
-    # Each node tracks its ancestors
-    ancestors = [set() for _ in range(n)]
-    queue = deque([i for i in range(n) if in_degree[i] == 0])
+    for _ in range(n - 1):
+        for u, v, weight in edges:
+            if distance[u] + weight < distance[v]:
+                distance[v] = distance[u] + weight
     
-    while queue:
-        node = queue.popleft()
-        
-        for neighbor in graph[node]:
-            # Neighbor inherits all ancestors from node
-            ancestors[neighbor].add(node)
-            ancestors[neighbor].update(ancestors[node])
-            
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
-                queue.append(neighbor)
+    for u, v, weight in edges:
+        if distance[u] + weight < distance[v]:
+            return True  # Arbitrage exists
     
-    return [sorted(list(anc)) for anc in ancestors]
+    return False
 ```
 
 ---
 
-## 5. Parallel Courses III (Maximum Time)
+## 5. Path with Limited Edges
 
-Find minimum time when courses can be taken in parallel.
+Find shortest path using at most K edges.
 
 ```python
-def minimum_time(n, relations, time):
-    graph = defaultdict(list)
-    in_degree = [0] * (n + 1)
+def shortest_path_k_edges(n, edges, source, k):
+    distance = [float('inf')] * n
+    distance[source] = 0
     
-    for prev, next in relations:
-        graph[prev].append(next)
-        in_degree[next] += 1
-    
-    # Track earliest completion time for each course
-    completion_time = [0] * (n + 1)
-    queue = deque()
-    
-    for i in range(1, n + 1):
-        if in_degree[i] == 0:
-            completion_time[i] = time[i - 1]
-            queue.append(i)
-    
-    while queue:
-        course = queue.popleft()
+    # Run exactly k iterations
+    for _ in range(k):
+        temp = distance.copy()
         
-        for next_course in graph[course]:
-            # Next course can start after current finishes
-            completion_time[next_course] = max(
-                completion_time[next_course],
-                completion_time[course] + time[next_course - 1]
-            )
-            
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append(next_course)
+        for u, v, weight in edges:
+            if distance[u] != float('inf'):
+                temp[v] = min(temp[v], distance[u] + weight)
+        
+        distance = temp
     
-    return max(completion_time)
+    return distance
 ```
 
 ---
 
-## 6. Lexicographically Smallest Ordering
+## 6. Minimum Cost with Discounts
 
-Find smallest valid topological order.
+Find shortest path where you can use discount coupons.
 
 ```python
-import heapq
-
-def smallest_topological_order(n, edges):
-    graph = defaultdict(list)
-    in_degree = [0] * n
+def minimum_cost_with_discounts(n, edges, source, target, discounts):
+    # State: (node, discounts_used)
+    # Use modified Bellman-Ford
+    distance = [[float('inf')] * (discounts + 1) for _ in range(n)]
+    distance[source][0] = 0
     
-    for u, v in edges:
-        graph[u].append(v)
-        in_degree[v] += 1
-    
-    # Use min-heap instead of queue for lexicographic order
-    heap = [i for i in range(n) if in_degree[i] == 0]
-    heapq.heapify(heap)
-    result = []
-    
-    while heap:
-        node = heapq.heappop(heap)
-        result.append(node)
+    for _ in range(n - 1):
+        updated = False
+        for u, v, cost in edges:
+            for d in range(discounts + 1):
+                if distance[u][d] != float('inf'):
+                    # Don't use discount
+                    if distance[u][d] + cost < distance[v][d]:
+                        distance[v][d] = distance[u][d] + cost
+                        updated = True
+                    
+                    # Use discount (half price)
+                    if d < discounts and distance[u][d] + cost // 2 < distance[v][d + 1]:
+                        distance[v][d + 1] = distance[u][d] + cost // 2
+                        updated = True
         
-        for neighbor in graph[node]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
-                heapq.heappush(heap, neighbor)
+        if not updated:
+            break
     
-    return result if len(result) == n else []
+    return min(distance[target])
 ```
 
 ---
 
-## 7. Build Order with Groups
+## 7. Shortest Path with Node Weights
 
-Process tasks in groups/batches level by level.
+Find shortest path considering both edge and node weights.
 
 ```python
-def build_in_batches(n, edges):
-    graph = defaultdict(list)
-    in_degree = [0] * n
+def shortest_path_node_weights(n, edges, node_weights, source):
+    distance = [float('inf')] * n
+    distance[source] = node_weights[source]
     
-    for u, v in edges:
-        graph[u].append(v)
-        in_degree[v] += 1
+    for _ in range(n - 1):
+        for u, v, edge_weight in edges:
+            if distance[u] != float('inf'):
+                # Add destination node weight
+                new_dist = distance[u] + edge_weight + node_weights[v]
+                distance[v] = min(distance[v], new_dist)
     
-    queue = deque([i for i in range(n) if in_degree[i] == 0])
-    batches = []
+    return distance
+```
+
+---
+
+## Bellman-Ford with Path Reconstruction
+
+Track parent pointers to reconstruct the shortest path.
+
+```python
+def bellman_ford_with_path(n, edges, source, target):
+    distance = [float('inf')] * n
+    parent = [-1] * n
+    distance[source] = 0
     
-    while queue:
-        # Process entire level at once
-        batch_size = len(queue)
-        current_batch = []
+    # Relax edges
+    for _ in range(n - 1):
+        for u, v, weight in edges:
+            if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+                distance[v] = distance[u] + weight
+                parent[v] = u
+    
+    # Check negative cycle
+    for u, v, weight in edges:
+        if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+            return None, []  # Negative cycle
+    
+    # Reconstruct path
+    if distance[target] == float('inf'):
+        return float('inf'), []
+    
+    path = []
+    node = target
+    while node != -1:
+        path.append(node)
+        node = parent[node]
+    
+    return distance[target], path[::-1]
+```
+
+---
+
+## Optimization: Early Termination
+
+Stop early if no updates occur in an iteration.
+
+```python
+def bellman_ford_optimized(n, edges, source):
+    distance = [float('inf')] * n
+    distance[source] = 0
+    
+    for i in range(n - 1):
+        updated = False
         
-        for _ in range(batch_size):
-            node = queue.popleft()
-            current_batch.append(node)
-            
-            for neighbor in graph[node]:
-                in_degree[neighbor] -= 1
-                if in_degree[neighbor] == 0:
-                    queue.append(neighbor)
+        for u, v, weight in edges:
+            if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+                distance[v] = distance[u] + weight
+                updated = True
         
-        batches.append(current_batch)
+        if not updated:
+            break  # No changes, can stop early
     
-    # Verify all nodes processed
-    total_nodes = sum(len(batch) for batch in batches)
-    return batches if total_nodes == n else []
+    # Check negative cycle
+    for u, v, weight in edges:
+        if distance[u] != float('inf') and distance[u] + weight < distance[v]:
+            return None
+    
+    return distance
 ```
 
 ---
 
 ## Tips
 
-- **In-degree tracking** is the key: nodes with 0 in-degree have no dependencies
-- Use **regular queue** for any valid order, **min-heap** for lexicographically smallest
-- Track **levels/rounds** by processing queue in batches or storing level with each node
-- If `len(result) != n`, there's a **cycle** in the graph
-- For **time-based problems**, track earliest completion time for each node
-- **Space optimization**: Can use array instead of defaultdict if nodes are 0 to n-1
-- BFS nature makes it easy to track levels/stages (unlike DFS approach)
+- **Copy distance array** when limiting iterations (K stops problem) to prevent same-iteration updates
+- **Initialize source to 0**, others to infinity
+- Check `distance[u] != float('inf')` before relaxing to avoid propagating infinity
+- **Negative cycle detection**: One more iteration after V-1; if any update occurs, cycle exists
+- For **K edges/stops**: Run exactly K iterations instead of V-1
+- **Early termination**: If no updates in iteration, shortest paths found
+- Use **negative log** for currency exchange to convert multiplication to addition
 
 ---
 
-## Advantages of Kahn's Algorithm
+## Bellman-Ford vs Dijkstra
 
-- Easy to detect cycles (if result.length < n)
-- Natural for level-by-level processing
-- Intuitive understanding (remove dependencies one by one)
-- Easy to track additional information (time, level, ancestors)
-- More intuitive than DFS for most people
-
----
-
-## Common Variations
-
-- **Minimum height trees**: Find nodes that minimize tree height when used as root
-- **Build order with priorities**: Use priority queue for weighted dependencies
-- **Multi-source BFS**: Start with multiple nodes having in-degree 0
-- **Bidirectional dependencies**: Check if valid ordering exists
+| Aspect | Bellman-Ford | Dijkstra |
+|--------|-------------|----------|
+| Negative weights | Yes | No |
+| Negative cycle detection | Yes | No |
+| Time complexity | O(V × E) | O((V + E) log V) |
+| Best for | Sparse graphs, negative weights | Dense graphs, positive weights |
+| Implementation | Simple edge relaxation | Priority queue required |
 
 ---
 
-By mastering Kahn's algorithm, you'll efficiently solve dependency ordering, scheduling, and prerequisite problems in interviews.
+## Advantages
+
+- Handles negative edge weights
+- Detects negative cycles
+- Simple implementation
+- Works with edge list (no adjacency list needed)
+- Flexible for constraints (K edges, discounts, etc.)
+
+---
+
+## Limitations
+
+- Slower than Dijkstra for positive weights
+- Doesn't work with negative cycles (undefined shortest path)
+- O(V × E) can be slow for dense graphs
+
+---
+
+By mastering Bellman-Ford, you'll solve shortest path problems with negative weights and detect negative cycles efficiently in interviews.
